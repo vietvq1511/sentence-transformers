@@ -23,10 +23,10 @@ import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--batch_size', type=int, default=24)
 parser.add_argument('--evaluation_steps', type=int, default= 1000)
-parser.add_argument('--ckpt_path', type=str, "./output")
-parser.add_argument('--num_epochs', type=int, "1")
-parser.add_argument('--data_path', type=str, "./DataNLI")
-parser.add_argument('--pre_trained_path', type=str, "./PhoBert")
+parser.add_argument('--ckpt_path', type=str, default = "./output")
+parser.add_argument('--num_epochs', type=int, default ="1")
+parser.add_argument('--data_path', type=str, default = "./DataNLI")
+parser.add_argument('--pre_trained_path', type=str, default = "./PhoBert")
 args = parser.parse_args()
 
 
