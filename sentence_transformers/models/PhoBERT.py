@@ -31,7 +31,7 @@ class PhoBERT(nn.Module):
 
     def forward(self, features):
         """Returns token_embeddings, cls_token"""
-        output_states = self.roberta(**features)
+        output_states = self.phobert(**features)
         output_tokens = output_states[0]
         cls_tokens = output_tokens[:, 0, :]  # CLS token is first token
         features.update({'token_embeddings': output_tokens, 'cls_token_embeddings': cls_tokens, 'attention_mask': features['attention_mask']})
@@ -42,7 +42,7 @@ class PhoBERT(nn.Module):
         return features
 
     def get_word_embedding_dimension(self) -> int:
-        return self.roberta.config.hidden_size
+        return self.phobert.config.hidden_size
 
     def tokenize(self, text: str) -> List[int]:
         """
@@ -67,7 +67,7 @@ class PhoBERT(nn.Module):
         return {key: self.__dict__[key] for key in self.config_keys}
 
     def save(self, output_path: str):
-        self.roberta.save_pretrained(output_path)
+        self.phobert.save_pretrained(output_path)
         self.tokenizer.save(output_path)
 
         with open(os.path.join(output_path, 'sentence_phobert_config.json'), 'w') as fOut:

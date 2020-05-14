@@ -41,11 +41,10 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
 if not os.path.exists(args.ckpt_path):
     os.mkdir(args.ckpt_path)
 
-#You can specify any huggingface/transformers pre-trained model here, for example, bert-base-uncased, roberta-base, xlm-roberta-base
-model_name = sys.argv[1] if len(sys.argv) > 1 else 'bert-base-uncased'
+# #You can specify any huggingface/transformers pre-trained model here, for example, bert-base-uncased, roberta-base, xlm-roberta-base
+# model_name = sys.argv[1] if len(sys.argv) > 1 else 'bert-base-uncased'
 
 # Read the dataset
-args.batch_size = 16
 nli_reader = NLIDataReader(args.data_path)
 train_num_labels = nli_reader.get_num_labels()
 
@@ -77,6 +76,7 @@ evaluator = LabelAccuracyEvaluator(dev_dataloader)
 
 # Configure the training
 warmup_steps = math.ceil(len(train_dataloader) * args.num_epochs / args.batch_size * 0.1) #10% of train data for warm-up
+# warmup_steps = math.ceil(len(train_dataloader) * args.num_epochs * 0.1) #10% of train data for warm-up - recommended
 logging.info("Warmup-steps: {}".format(warmup_steps))
 
 
@@ -98,7 +98,7 @@ model.fit(train_objectives=[(train_dataloader, train_loss)],
 #
 ##############################################################################
 
-model = SentenceTransformer(model_save_path)
+model = SentenceTransformer(args.ckpt_path)
 
 test_data = SentencesDataset(nli_reader.get_examples('test.gz'), model=model)
 test_dataloader = DataLoader(test_data, shuffle=False, batch_size=args.batch_size)
