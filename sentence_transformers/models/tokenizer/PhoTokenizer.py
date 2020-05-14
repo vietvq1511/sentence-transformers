@@ -129,10 +129,16 @@ class PhoTokenizer(object):
 
     @staticmethod
     def load(model_path: str, **kwargs):
-        with open(os.path.join(model_path, CONFIG_FILE), 'r') as fIn:
-            config = json.load(fIn)
-
+        config_path = os.path.join(model_path, CONFIG_FILE)
+        config = {}
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as fIn:
+                config = json.load(fIn)
+        elif len(kwargs) == 0:
+            raise EnvironmentError("{CONFIG_FILE} not found. Please initialize model instead of using load method.")
+        
         config.update(kwargs)
+        
         return PhoTokenizer(model_path, **config)
 
     def save(self, output_path: str):
