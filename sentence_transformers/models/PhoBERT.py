@@ -12,7 +12,7 @@ class PhoBERT(nn.Module):
 
     Each token is mapped to an output vector from PhoBERT.
     """
-    def __init__(self, model_name_or_path: str, max_seq_length: int = 128, do_lower_case: Optional[bool] = False, model_args: Dict = {}, tokenizer_args: Dict = {}):
+    def __init__(self, model_path: str, max_seq_length: int = 128, do_lower_case: Optional[bool] = False, model_args: Dict = {}, tokenizer_args: Dict = {}):
         super(PhoBERT, self).__init__()
         self.config_keys = ['max_seq_length', 'do_lower_case']
         self.do_lower_case = do_lower_case
@@ -25,8 +25,8 @@ class PhoBERT(nn.Module):
         if self.do_lower_case is not None:
             tokenizer_args['do_lower_case'] = do_lower_case
 
-        self.phobert = RobertaModel.from_pretrained(model_name_or_path, **model_args)
-        self.tokenizer = PhoTokenizer.load(model_name_or_path, **tokenizer_args)
+        self.phobert = RobertaModel.from_pretrained(model_path, **model_args)
+        self.tokenizer = PhoTokenizer.load(model_path, **tokenizer_args)
 
 
     def forward(self, features):
@@ -81,4 +81,4 @@ class PhoBERT(nn.Module):
                 config = json.load(fIn)
         else:
             config = {}
-        return PhoBERT(model_name_or_path=input_path, **config)
+        return PhoBERT(model_path=input_path, **config)

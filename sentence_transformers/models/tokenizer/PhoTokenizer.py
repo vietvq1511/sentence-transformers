@@ -12,7 +12,10 @@ from fairseq.data import Dictionary
 from fairseq.data.encoders.fastbpe import fastBPE
 
 logger = logging.getLogger(__name__)
-config_file = 'photokenizer_config.json'
+CONFIG_FILE = 'photokenizer_config.json'
+VOCAB_FILE = 'dict.txt'
+BPECODE_FILE = 'bpe.codes'
+
 LARGE_INTEGER = int(1e20)  # This is used when we need something big but slightly smaller than VERY_LARGE_INTEGER
 
 class BatchEncoding(UserDict):
@@ -104,7 +107,16 @@ class PhoTokenizer(object):
         """ Id of the classification token in the vocabulary. E.g. to extract a summary of an input sequence leveraging self-attention along the full depth of the model."""
         return self.vocab.bos_index
 
-    def __init__(self, vncorenlp_path: str = None, bpe_codes_path: str = None, vocab_file_path: str = None, do_lower_case: bool = False):
+    def __init__(self, model_path: str, vncorenlp_path: str, do_lower_case: bool = False):
+        bpe_codes_path = os.path.join(model_path, BPECODE_FILE)
+        vocab_file_path = os.path.join(model_path, VOCAB_FILE)
+        
+        if not os.path.isfile(bpe_codes_path):
+            raise EnvironmentError(f"{BPECODE_FILE} not found in {model_path}")
+            
+        if not os.path.isfile(vocab_file_path):
+            raise EnvironmentError(f"{VOCAB_FILE} not found in {model_path}")
+
         self.do_lower_case = do_lower_case
         
         BPEConfig = namedtuple('BPEConfig', 'vncorenlp bpe_codes vocab')
@@ -116,16 +128,16 @@ class PhoTokenizer(object):
         self.vocab.add_from_file(self.pho_config.vocab)
 
     @staticmethod
-    def load(input_path: str, **kwargs):
-        with open(os.path.join(input_path, config_file), 'r') as fIn:
+    def load(model_path: str, **kwargs):
+        with open(os.path.join(model_path, CONFIG_FILE), 'r') as fIn:
             config = json.load(fIn)
 
         config.update(kwargs)
-        return PhoTokenizer(**config)
+        return PhoTokenizer(model_path, **config)
 
     def save(self, output_path: str):
-        with open(os.path.join(output_path, config_file), 'w') as fOut:
-            json.dump({'vncorenlp_path': self.pho_config.vncorenlp, 'bpe_codes_path': self.pho_config.bpe_codes, 'vocab_file_path': self.pho_config.vocab, 'do_lower_case': self.do_lower_case}, fOut)
+        with open(os.path.join(output_path, CONFIG_FILE), 'w') as fOut:
+            json.dump({'vncorenlp_path': self.pho_config.vncorenlp, 'do_lower_case': self.do_lower_case}, fOut)
 
     def segment(self, text: str) -> str:
         ''' Segment words in text and then flat the list '''
