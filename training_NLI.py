@@ -26,7 +26,8 @@ parser.add_argument('--evaluation_steps', type=int, default= 1000)
 parser.add_argument('--ckpt_path', type=str, default = "./output")
 parser.add_argument('--num_epochs', type=int, default ="1")
 parser.add_argument('--data_path', type=str, default = "./DataNLI")
-parser.add_argument('--pre_trained_path', type=str, default = "./PhoBert")
+parser.add_argument('--pre_trained_path', type=str, default = "./PhoBERTt")
+parser.add_argument('--vncorenlp_path', type=str, default = "./VnCoreNLP/VnCoreNLP-1.1.1.jar")
 args = parser.parse_args()
 
 
@@ -50,7 +51,7 @@ train_num_labels = nli_reader.get_num_labels()
 
 
 # Use Huggingface/transformers model (like BERT, RoBERTa, XLNet, XLM-R) for mapping tokens to embeddings
-word_embedding_model = models.PhoBERT.load(args.pre_trained_path)
+word_embedding_model = models.PhoBERT(args.pre_trained_path, tokenizer_args={'vncorenlp_path':args.vncorenlp_path})
 
 # Apply mean pooling to get one fixed sized sentence vector
 pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(),
