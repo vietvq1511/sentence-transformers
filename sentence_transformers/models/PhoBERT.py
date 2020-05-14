@@ -75,10 +75,6 @@ class PhoBERT(nn.Module):
 
     @staticmethod
     def load(input_path: str):
-        config_path = os.path.join(input_path, 'sentence_phobert_config.json')
-        if os.path.exists(config_path):
-            with open(config_path) as fIn:
+        with open(os.path.join(input_path, 'sentence_phobert_config.json')) as fIn:
                 config = json.load(fIn)
-        else:
-            config = {}
         return PhoBERT(model_path=input_path, **config)
