@@ -107,22 +107,22 @@ class PhoTokenizer(object):
         """ Id of the classification token in the vocabulary. E.g. to extract a summary of an input sequence leveraging self-attention along the full depth of the model."""
         return self.vocab.bos_index
 
-    def __init__(self, model_path: str, vncorenlp_path: str, do_lower_case: bool = False):
-        bpe_codes_path = os.path.join(model_path, BPECODE_FILE)
-        vocab_file_path = os.path.join(model_path, VOCAB_FILE)
+    def __init__(self, bpe_path: str, vncorenlp_path: str, do_lower_case: bool = False):
+        bpe_codes_path = os.path.join(bpe_path, BPECODE_FILE)
+        vocab_file_path = os.path.join(bpe_path, VOCAB_FILE)
         
         if not os.path.isfile(bpe_codes_path):
-            raise EnvironmentError(f"{BPECODE_FILE} not found in {model_path}")
+            raise EnvironmentError(f"{BPECODE_FILE} not found in {bpe_path}")
             
         if not os.path.isfile(vocab_file_path):
-            raise EnvironmentError(f"{VOCAB_FILE} not found in {model_path}")
+            raise EnvironmentError(f"{VOCAB_FILE} not found in {bpe_path}")
 
         self.do_lower_case = do_lower_case
         
         BPEConfig = namedtuple('BPEConfig', 'vncorenlp bpe_codes vocab')
 
         self.pho_config = BPEConfig(vncorenlp=vncorenlp_path, bpe_codes=bpe_codes_path, vocab=vocab_file_path)
-        self.rdrsegmenter = VnCoreNLP(self.pho_config.vncorenlp, annotators="wseg", max_heap_size='-Xmx500m')
+        self.rdrsegmenter = VnCoreNLP(self.pho_config.vncorenlp, annotators="wseg", max_heap_size='-Xmx1g')
         self.bpe = fastBPE(self.pho_config)
         self.vocab = Dictionary()
         self.vocab.add_from_file(self.pho_config.vocab)

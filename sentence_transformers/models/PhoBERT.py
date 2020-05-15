@@ -26,7 +26,7 @@ class PhoBERT(nn.Module):
             tokenizer_args['do_lower_case'] = do_lower_case
 
         self.phobert = RobertaModel.from_pretrained(model_path, **model_args)
-        self.tokenizer = PhoTokenizer.load(model_path, **tokenizer_args)
+        self.tokenizer = PhoTokenizer.load(**tokenizer_args)
 
 
     def forward(self, features):
