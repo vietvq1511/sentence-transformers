@@ -26,8 +26,9 @@ parser.add_argument('--evaluation_steps', type=int, default= 1000)
 parser.add_argument('--ckpt_path', type=str, default = "./output")
 parser.add_argument('--num_epochs', type=int, default ="1")
 parser.add_argument('--data_path', type=str, default = "./DataNLI")
-parser.add_argument('--pre_trained_path', type=str, default = "./PhoBERTt")
+parser.add_argument('--pre_trained_path', type=str, default = "./PhoBERT")
 parser.add_argument('--vncorenlp_path', type=str, default = "./VnCoreNLP/VnCoreNLP-1.1.1.jar")
+parser.add_argument('--bpe_path', type=str, default = "./PhoBERT")
 args = parser.parse_args()
 
 
@@ -50,7 +51,7 @@ train_num_labels = nli_reader.get_num_labels()
 
 
 # Use Huggingface/transformers model (like BERT, RoBERTa, XLNet, XLM-R) for mapping tokens to embeddings
-word_embedding_model = models.PhoBERT(args.pre_trained_path, tokenizer_args={'vncorenlp_path':args.vncorenlp_path})
+word_embedding_model = models.PhoBERT(args.pre_trained_path, tokenizer_args={'vncorenlp_path':args.vncorenlp_path, 'bpe_path':args.bpe_path})
 
 # Apply mean pooling to get one fixed sized sentence vector
 pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(),
@@ -72,11 +73,11 @@ logging.info("Read XNLI dev dataset")
 
 dev_data = SentencesDataset(nli_reader.get_examples('dev.gz'), model=model)
 dev_dataloader = DataLoader(dev_data, shuffle=False, batch_size=args.batch_size)
-evaluator = LabelAccuracyEvaluator(dev_dataloader)
+evaluator = LabelAccuracyEvaluator(dev_dataloader, softmax_model=train_loss)
 
 # Configure the training
-warmup_steps = math.ceil(len(train_dataloader) * args.num_epochs / args.batch_size * 0.1) #10% of train data for warm-up
-# warmup_steps = math.ceil(len(train_dataloader) * args.num_epochs * 0.1) #10% of train data for warm-up - recommended
+# warmup_steps = math.ceil(len(train_dataloader) * args.num_epochs / args.batch_size * 0.1) #10% of train data for warm-up
+warmup_steps = math.ceil(len(train_dataloader) * args.num_epochs * 0.1) #10% of train data for warm-up - recommended
 logging.info("Warmup-steps: {}".format(warmup_steps))
 
 
@@ -98,10 +99,10 @@ model.fit(train_objectives=[(train_dataloader, train_loss)],
 #
 ##############################################################################
 
-model = SentenceTransformer(args.ckpt_path)
+# model = SentenceTransformer(args.ckpt_path)
+# train_loss = losses.SoftmaxLoss(model=model, sentence_embedding_dimension=model.get_sentence_embedding_dimension(), num_labels=train_num_labels)
+# test_data = SentencesDataset(nli_reader.get_examples('test.gz'), model=model)
+# test_dataloader = DataLoader(test_data, shuffle=False, batch_size=args.batch_size)
+# evaluator = LabelAccuracyEvaluator(test_dataloader, softmax_model=train_loss)
 
-test_data = SentencesDataset(nli_reader.get_examples('test.gz'), model=model)
-test_dataloader = DataLoader(test_data, shuffle=False, batch_size=args.batch_size)
-evaluator = LabelAccuracyEvaluator(test_dataloader)
-
-model.evaluate(evaluator)
+# model.evaluate(evaluator)

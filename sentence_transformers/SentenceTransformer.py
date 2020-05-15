@@ -425,10 +425,11 @@ class SentenceTransformer(nn.Sequential):
     def _eval_during_training(self, evaluator, output_path, save_best_model, epoch, steps):
         """Runs evaluation during the training"""
         if evaluator is not None:
-            score = evaluator(self, output_path=output_path, epoch=epoch, steps=steps)
+            score, model_weight = evaluator(self, output_path=output_path, epoch=epoch, steps=steps)
             if score > self.best_score and save_best_model:
                 self.save(output_path)
                 self.best_score = score
+                torch.save(model_weight, os.path.join(output_path, 'modelll.pt'))
 
 
     def _get_scheduler(self, optimizer, scheduler: str, warmup_steps: int, t_total: int):

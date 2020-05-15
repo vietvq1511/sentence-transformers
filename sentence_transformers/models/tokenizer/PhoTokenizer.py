@@ -139,11 +139,11 @@ class PhoTokenizer(object):
         
         config.update(kwargs)
         
-        return PhoTokenizer(model_path, **config)
+        return PhoTokenizer(**config)
 
     def save(self, output_path: str):
         with open(os.path.join(output_path, CONFIG_FILE), 'w') as fOut:
-            json.dump({'vncorenlp_path': self.pho_config.vncorenlp, 'do_lower_case': self.do_lower_case}, fOut)
+            json.dump({'bpe_path': self.pho_config.vocab.replace(VOCAB_FILE, ''), 'vncorenlp_path': self.pho_config.vncorenlp, 'do_lower_case': self.do_lower_case}, fOut)
 
     def segment(self, text: str) -> str:
         ''' Segment words in text and then flat the list '''
