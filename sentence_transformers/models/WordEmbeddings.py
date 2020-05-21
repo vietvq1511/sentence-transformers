@@ -106,6 +106,8 @@ class WordEmbeddings(nn.Module):
                 word = split[0]
 
                 if embeddings_dimension == None:
+                    if len(split) - 1 < 300:
+                        continue
                     embeddings_dimension = len(split) - 1
                     vocab.append("PADDING_TOKEN")
                     embeddings.append(np.zeros(embeddings_dimension))

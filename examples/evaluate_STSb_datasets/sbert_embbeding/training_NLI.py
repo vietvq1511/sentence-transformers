@@ -64,8 +64,8 @@ pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension
 
 model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
 
-for param in model.parameters():
-    param.requires_grad = False
+# for param in model.parameters():
+#     param.requires_grad = False
 
 # Convert the dataset to a DataLoader ready for training
 logging.info("Read XNLI train dataset")

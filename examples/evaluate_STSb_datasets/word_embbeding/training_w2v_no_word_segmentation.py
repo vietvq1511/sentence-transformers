@@ -61,12 +61,12 @@ model = SentenceTransformer(modules=[word_embedding_model, pooling_model, dan1, 
 
 # Convert the dataset to a DataLoader ready for training
 logging.info("Read STSbenchmark train dataset")
-train_data = SentencesDataset(sts_reader.get_examples('sts-train.csv'), model=model)
+train_data = SentencesDataset(sts_reader.get_examples('sts-train_vi.csv'), model=model)
 train_dataloader = DataLoader(train_data, shuffle=True, batch_size=args.batch_size)
 train_loss = losses.CosineSimilarityLoss(model=model)
 
 logging.info("Read STSbenchmark dev dataset")
-dev_data = SentencesDataset(examples=sts_reader.get_examples('sts-dev.csv'), model=model)
+dev_data = SentencesDataset(examples=sts_reader.get_examples('sts-dev_vi.csv'), model=model)
 dev_dataloader = DataLoader(dev_data, shuffle=False, batch_size=args.batch_size)
 evaluator = EmbeddingSimilarityEvaluator(dev_dataloader)
 
@@ -91,7 +91,7 @@ model.fit(train_objectives=[(train_dataloader, train_loss)],
 ##############################################################################
 
 model = SentenceTransformer(args.ckpt_path)
-test_data = SentencesDataset(examples=sts_reader.get_examples("sts-test.csv"), model=model)
+test_data = SentencesDataset(examples=sts_reader.get_examples("sts-test_vi.csv"), model=model)
 test_dataloader = DataLoader(test_data, shuffle=False, batch_size=args.batch_size)
 evaluator = EmbeddingSimilarityEvaluator(test_dataloader)
 
