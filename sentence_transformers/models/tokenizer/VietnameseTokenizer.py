@@ -73,3 +73,4 @@ class VietnameseTokenizer(WordTokenizer):
             config = json.load(fIn)
 
         return VietnameseTokenizer(**config)
+        
