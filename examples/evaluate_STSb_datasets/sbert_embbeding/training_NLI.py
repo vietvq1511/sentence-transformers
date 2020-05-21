@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 import math
 from sentence_transformers import models, losses
 from sentence_transformers import SentencesDataset, LoggingHandler, SentenceTransformer
-from sentence_transformers.evaluation import LabelAccuracyEvaluator
+from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 from sentence_transformers.readers import *
 import logging
 from datetime import datetime
@@ -25,7 +25,8 @@ parser.add_argument('--batch_size', type=int, default=24)
 parser.add_argument('--evaluation_steps', type=int, default= 1000)
 parser.add_argument('--ckpt_path', type=str, default = "./output")
 parser.add_argument('--num_epochs', type=int, default ="1")
-parser.add_argument('--data_path', type=str, default = "./DataNLI")
+parser.add_argument('--NLIdata_path', type=str, default = "./DataNLI")
+parser.add_argument('--STSdata_path', type=str, default = "./STSdata_path")
 parser.add_argument('--pre_trained_path', type=str, default = "./PhoBERT")
 parser.add_argument('--vncorenlp_path', type=str, default = "./VnCoreNLP/VnCoreNLP-1.1.1.jar")
 parser.add_argument('--bpe_path', type=str, default = "./PhoBERT")
@@ -46,7 +47,9 @@ if not os.path.exists(args.ckpt_path):
 # model_name = sys.argv[1] if len(sys.argv) > 1 else 'bert-base-uncased'
 
 # Read the dataset
-nli_reader = NLIDataReader(args.data_path)
+nli_reader = NLIDataReader(args.NLIdata_path)
+sts_reader = STSBenchmarkDataReader(args.STSdata_path)
+
 train_num_labels = nli_reader.get_num_labels()
 
 
@@ -73,11 +76,10 @@ train_loss = losses.SoftmaxLoss(model=model, sentence_embedding_dimension=model.
 
 
 #convert the dataset to a Dataloader ready for dev
-logging.info("Read XNLI dev dataset")
-
-dev_data = SentencesDataset(nli_reader.get_examples('dev.gz'), model=model)
+logging.info("Read STSbenchmark dev dataset")
+dev_data = SentencesDataset(examples=sts_reader.get_examples('sts-dev.csv'), model=model)
 dev_dataloader = DataLoader(dev_data, shuffle=False, batch_size=args.batch_size)
-evaluator = LabelAccuracyEvaluator(dev_dataloader, softmax_model=train_loss)
+evaluator = EmbeddingSimilarityEvaluator(dev_dataloader)
 
 # Configure the training
 # warmup_steps = math.ceil(len(train_dataloader) * args.num_epochs / args.batch_size * 0.1) #10% of train data for warm-up
@@ -103,10 +105,9 @@ model.fit(train_objectives=[(train_dataloader, train_loss)],
 #
 ##############################################################################
 
-# model = SentenceTransformer(args.ckpt_path)
-# train_loss = losses.SoftmaxLoss(model=model, sentence_embedding_dimension=model.get_sentence_embedding_dimension(), num_labels=train_num_labels)
-# test_data = SentencesDataset(nli_reader.get_examples('test.gz'), model=model)
-# test_dataloader = DataLoader(test_data, shuffle=False, batch_size=args.batch_size)
-# evaluator = LabelAccuracyEvaluator(test_dataloader, softmax_model=train_loss)
+model = SentenceTransformer(args.ckpt_path)
+test_data = SentencesDataset(examples=sts_reader.get_examples("sts-test.csv"), model=model)
+test_dataloader = DataLoader(test_data, shuffle=False, batch_size=args.batch_size)
+evaluator = EmbeddingSimilarityEvaluator(test_dataloader)
 
-# model.evaluate(evaluator)
+model.evaluate(evaluator)
