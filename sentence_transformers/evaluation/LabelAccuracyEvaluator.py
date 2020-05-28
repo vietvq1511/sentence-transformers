@@ -73,4 +73,5 @@ class LabelAccuracyEvaluator(SentenceEvaluator):
                     writer = csv.writer(f)
                     writer.writerow([epoch, steps, accuracy])
 
-        return accuracy, self.softmax_model.state_dict()
+        #return accuracy, self.softmax_model.state_dict()
+        return accuracy
