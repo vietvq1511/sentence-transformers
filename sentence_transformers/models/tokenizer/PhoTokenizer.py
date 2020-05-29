@@ -736,4 +736,4 @@ class PhoTokenizer(object):
         return tokens
 
     def save_pretrained(self, **kwargs):
-        pass
+        return ('', '', '', '')
