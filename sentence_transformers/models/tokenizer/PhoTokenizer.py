@@ -734,3 +734,6 @@ class PhoTokenizer(object):
             index = int(index)
             tokens.append(self.vocab[index])
         return tokens
+
+    def save_pretrained(self, **kwargs):
+        pass
