@@ -735,5 +735,5 @@ class PhoTokenizer(object):
             tokens.append(self.vocab[index])
         return tokens
 
-    def save_pretrained(self, **kwargs):
+    def save_pretrained(self, *args, **kwargs):
         return ('', '', '', '')
