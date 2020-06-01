@@ -43,7 +43,7 @@ sts_reader = STSBenchmarkDataReader(args.data_path)
 # Map tokens to traditional word embeddings like GloVe
 word_embedding_model = models.WordEmbeddings.from_text_file(embeddings_file_path=args.embeddings_file_path, tokenizer = VietnameseTokenizer(stop_words=VIETNAM_STOP_WORDS_SEGMENTATION, vncorenlp_path=args.vncorenlp_path))
 
-lstm = models.LSTM(word_embedding_dimension=word_embedding_model.get_word_embedding_dimension(), hidden_dim=1024)
+lstm = models.LSTM(word_embedding_dimension=word_embedding_model.get_word_embedding_dimension(), hidden_dim=150)
 
 # Apply mean pooling to get one fixed sized sentence vector
 pooling_model = models.Pooling(lstm.get_word_embedding_dimension(),
