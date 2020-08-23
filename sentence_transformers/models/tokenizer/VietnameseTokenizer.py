@@ -16,6 +16,7 @@ class VietnameseTokenizer(WordTokenizer):
         self.stop_words = set(stop_words)
         self.do_lower_case = do_lower_case
         self.set_vocab(vocab)
+        self.vncorenlp_path = vncorenlp_path
         self.rdrsegmenter = VnCoreNLP(vncorenlp_path, annotators="wseg", max_heap_size='-Xmx1g')
 
     def get_vocab(self):
@@ -60,12 +61,12 @@ class VietnameseTokenizer(WordTokenizer):
             elif token in self.word2idx:
                 tokens_filtered.append(self.word2idx[token])
                 continue
-
+            tokens_filtered.append(0)
         return tokens_filtered
 
     def save(self, output_path: str):
         with open(os.path.join(output_path, 'VietnameseTokenizer_config.json'), 'w') as fOut:
-            json.dump({'vocab': list(self.word2idx.keys()), 'stop_words': list(self.stop_words), 'do_lower_case': self.do_lower_case}, fOut)
+            json.dump({'vocab': list(self.word2idx.keys()), 'stop_words': list(self.stop_words), 'do_lower_case': self.do_lower_case, 'vncorenlp_path': self.vncorenlp_path}, fOut)
 
     @staticmethod
     def load(input_path: str):

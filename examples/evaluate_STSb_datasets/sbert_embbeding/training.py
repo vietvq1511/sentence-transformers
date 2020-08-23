@@ -8,6 +8,7 @@ python training_nli.py
 OR
 python training_nli.py pretrained_transformer_model_name
 """
+import torch
 from torch.utils.data import DataLoader
 import math
 from sentence_transformers import SentenceTransformer,  SentencesDataset, LoggingHandler, losses, models
@@ -17,7 +18,9 @@ import logging
 from datetime import datetime
 import sys, os
 import argparse
-
+import numpy as np
+np.random.seed(42)
+torch.manual_seed(42)
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--batch_size', type=int, default=24)
 parser.add_argument('--evaluation_steps', type=int, default= 1000)

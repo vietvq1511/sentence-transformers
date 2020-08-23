@@ -79,7 +79,7 @@ class WhitespaceTokenizer(WordTokenizer):
             elif token in self.word2idx:
                 tokens_filtered.append(self.word2idx[token])
                 continue
-
+            tokens_filtered.append(0)
         return tokens_filtered
     def save(self, output_path: str):
         with open(os.path.join(output_path, 'whitespacetokenizer_config.json'), 'w') as fOut:

@@ -18,6 +18,9 @@ from datetime import datetime
 from sentence_transformers.models.tokenizer.WordTokenizer import VIETNAM_STOP_WORDS_SEGMENTATION
 from sentence_transformers.models.tokenizer.VietnameseTokenizer import *
 import argparse
+import numpy as np
+np.random.seed(42)
+torch.manual_seed(42)
 #### Just some code to print debug information to stdout
 logging.basicConfig(format='%(asctime)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S',

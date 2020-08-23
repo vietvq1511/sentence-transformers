@@ -16,7 +16,9 @@ from datetime import datetime
 from sentence_transformers.models.tokenizer.WordTokenizer import VIETNAM_STOP_WORDS_SEGMENTATION
 from sentence_transformers.models.tokenizer.VietnameseTokenizer import *
 import argparse
-
+import numpy as np
+np.random.seed(42)
+torch.manual_seed(42)
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--batch_size', type=int, default=24)
 parser.add_argument('--ckpt_path', type=str, default = "./output")

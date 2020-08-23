@@ -17,7 +17,9 @@ import logging
 from datetime import datetime
 import sys, os
 import argparse
-
+import numpy as np
+np.random.seed(42)
+torch.manual_seed(42)
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--batch_size', type=int, default=24)
 parser.add_argument('--evaluation_steps', type=int, default= 1000)
@@ -45,7 +47,7 @@ sts_reader = STSBenchmarkDataReader(args.data_path, normalize_scores=True)
 # Use Huggingface/transformers model (like BERT, RoBERTa, XLNet, XLM-R) for mapping tokens to embeddings
 word_embedding_model = models.PhoBERT(args.pre_trained_path, tokenizer_args={'vncorenlp_path':args.vncorenlp_path, 'bpe_path':args.bpe_path})
 
-cnn = models.CNN(in_word_embedding_dimension=word_embedding_model.get_word_embedding_dimension(), out_channels=300, kernel_sizes=[3,3,5,1])
+cnn = models.CNN(in_word_embedding_dimension=word_embedding_model.get_word_embedding_dimension(), out_channels=256, kernel_sizes=[1,3,5,5,3,1])
 # Apply mean pooling to get one fixed sized sentence vector
 pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(),
                                pooling_mode_mean_tokens=True,
@@ -91,4 +93,4 @@ model = SentenceTransformer(args.ckpt_path)
 test_data = SentencesDataset(examples=sts_reader.get_examples("sts-test_vi.csv"), model=model)
 test_dataloader = DataLoader(test_data, shuffle=False, batch_size=args.batch_size)
 evaluator = EmbeddingSimilarityEvaluator(test_dataloader)
-model.evaluate(evaluator)
+model.evaluate(evaluator, args.ckpt_path)

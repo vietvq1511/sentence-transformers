@@ -18,7 +18,9 @@ from datetime import datetime
 import sys
 import os
 import argparse
-
+import numpy as np
+np.random.seed(42)
+torch.manual_seed(42)
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--batch_size', type=int, default=24)
