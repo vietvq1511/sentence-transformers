@@ -175,6 +175,9 @@ class SentenceTransformer(nn.Sequential):
     def tokenize(self, text):
         return self._first_module().tokenize(text)
 
+    def bpe_encode(self, text: str) -> str:
+        return self._first_module().tokenizer.tokenize(text)
+
     def get_sentence_features(self, *features):
         return self._first_module().get_sentence_features(*features)
 
